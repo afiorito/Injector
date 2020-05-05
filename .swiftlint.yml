@@ -1,0 +1,5 @@
+line_length:
+  warning: 150
+
+excluded:
+  - Tests/InjectorTests/XCTestManifests.swift
