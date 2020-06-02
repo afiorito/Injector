@@ -1,11 +1,10 @@
 /// A protocol for resolving a service.
-protocol Resolver: class {
+protocol Resolver: AnyObject {
     func resolve<Service>(registration: Registration<Service>) -> Service?
 }
 
 /// A graph resolver resolves the same service once during a given resolution cycle.
 class GraphResolver: Resolver {
-
     func resolve<Service>(registration: Registration<Service>) -> Service? {
         if let nodeService = graph[registration.key] as? Service {
             return nodeService
@@ -28,7 +27,8 @@ class GraphResolver: Resolver {
     private var depth = 0
 }
 
-/// A shared resolver resolves the same service while strong references to them exist. The service remains deallocated until the next resolve.
+/// A shared resolver resolves the same service while strong references to them exist. 
+/// The service remains deallocated until the next resolve.
 class SharedResolver: Resolver {
     private var cachedServices = [String: WeakService](minimumCapacity: 16)
 
@@ -49,7 +49,6 @@ class SharedResolver: Resolver {
     private struct WeakService {
         weak var service: AnyObject?
     }
-
 }
 
 /// A singleton resolver resolves the same service after every resolution.
@@ -74,7 +73,6 @@ class SingletonResolver: Resolver {
 /// A unique resolver resolves a new service after every resolution.
 class UniqueResolver: Resolver {
     func resolve<Service>(registration: Registration<Service>) -> Service? {
-        return registration.resolve()
+        registration.resolve()
     }
-
 }

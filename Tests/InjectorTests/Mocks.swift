@@ -2,10 +2,10 @@ import Foundation
 import Injector
 
 extension Container: ContainerRegistering {
-  public static func registerContainerServices() {
-    register { MockApiService() }
-    register { MockDatabaseService(resolveOptional()) }
-  }
+    public static func registerContainerServices() {
+        register { MockApiService() }
+        register { MockDatabaseService(resolveOptional()) }
+    }
 }
 
 // MARK: - Mock Protocols
@@ -54,14 +54,14 @@ class MockNamedService {
     let name: String
     let uuid = UUID()
 
-    init(_ name: String ) {
+    init(_ name: String) {
         self.name = name
     }
 }
 
 struct MockValue {
     let uuid = UUID()
-    var name: String { return "MockValue" }
+    var name: String { "MockValue" }
 }
 
 class MockValueService {

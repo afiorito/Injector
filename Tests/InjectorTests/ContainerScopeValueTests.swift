@@ -1,8 +1,7 @@
-import XCTest
 @testable import Injector
+import XCTest
 
 class ContainerScopeValueTests: XCTestCase {
-
     var container: Container!
 
     override func setUp() {
@@ -17,7 +16,7 @@ class ContainerScopeValueTests: XCTestCase {
     func testContainerScopeGraph() {
         // graph scope is the default
         container.register { MockValue() }
-        container.register { MockValueService( self.container.resolveOptional(), self.container.resolveOptional() ) }
+        container.register { MockValueService(self.container.resolveOptional(), self.container.resolveOptional()) }
 
         let service: MockValueService? = container.resolveOptional()
 
@@ -68,5 +67,4 @@ class ContainerScopeValueTests: XCTestCase {
         XCTAssertNotNil(value2)
         XCTAssertNotEqual(value1?.uuid, value2?.uuid)
     }
-
 }

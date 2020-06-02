@@ -1,8 +1,7 @@
-import XCTest
 @testable import Injector
+import XCTest
 
 class ContainerProtocolTests: XCTestCase {
-
     var container: Container!
 
     override func setUp() {
@@ -73,5 +72,4 @@ class ContainerProtocolTests: XCTestCase {
         XCTAssertNotNil(updater)
         XCTAssertEqual(updater?.updating, true)
     }
-
 }

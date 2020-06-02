@@ -100,4 +100,4 @@ class ViewController: UIViewController {
 ```
 
 ## License
-Injector is available under the MIT license. See the [LICENSE.md](LICENSE) file for more info.
+Injector is available under the MIT license. See the [LICENSE](LICENSE) file for more info.

@@ -1,8 +1,7 @@
-import XCTest
 @testable import Injector
+import XCTest
 
 class InjectorTests: XCTestCase {
-
     override func setUp() {
         super.setUp()
 
@@ -42,5 +41,4 @@ class InjectorTests: XCTestCase {
         XCTAssertNotNil(lazyInjectedService.service.apiService)
         XCTAssertTrue(lazyInjectedService.$service.isInjected)
     }
-
 }

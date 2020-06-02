@@ -1,5 +1,14 @@
+disabled_rules:
+  - force_cast
+  - trailing_comma
+  - switch_case_alignment
+  - opening_brace
+
+opt_in_rules:
+  - unneeded_parentheses_in_closure_argument
+
 line_length:
-  warning: 150
+  warning: 120
 
 excluded:
   - Tests/InjectorTests/XCTestManifests.swift

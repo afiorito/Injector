@@ -1,8 +1,7 @@
-import XCTest
 @testable import Injector
+import XCTest
 
 class ContainerScopeReferenceTests: XCTestCase {
-
     var container: Container!
 
     override func setUp() {
@@ -46,7 +45,7 @@ class ContainerScopeReferenceTests: XCTestCase {
         let service: MockApiService? = container.resolveOptional()
 
         XCTAssertNotEqual(initialUUID, service?.uuid)
-     }
+    }
 
     func testContainerScopeSingleton() {
         container.register { MockApiService() }.scope(.singleton)
@@ -69,5 +68,4 @@ class ContainerScopeReferenceTests: XCTestCase {
         XCTAssertNotNil(service2)
         XCTAssertNotEqual(service1?.uuid, service2?.uuid)
     }
-
 }

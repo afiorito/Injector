@@ -5,18 +5,17 @@ import Foundation
 /// The wrapped dependent service is resolved immediately using the main container upon initialization.
 @propertyWrapper
 public struct Injected<Service> {
-
     public init(name: String? = nil) {
-        self.service = Container.resolve(Service.self, name: name)
+        service = Container.resolve(Service.self, name: name)
     }
 
     public var wrappedValue: Service {
-        get { return service }
+        get { service }
         mutating set { service = newValue }
     }
 
     public var projectedValue: Injected<Service> {
-        get { return self }
+        get { self }
         mutating set { self = newValue }
     }
 
@@ -29,18 +28,22 @@ public struct Injected<Service> {
 @propertyWrapper
 public struct OptionalInjected<Service> {
     private var service: Service?
+
     public init() {
-        self.service = Container.resolveOptional(Service.self)
+        service = Container.resolveOptional(Service.self)
     }
+
     public init(name: String? = nil) {
-        self.service = Container.resolveOptional(Service.self, name: name)
+        service = Container.resolveOptional(Service.self, name: name)
     }
+
     public var wrappedValue: Service? {
-        get { return service }
+        get { service }
         mutating set { service = newValue }
     }
+
     public var projectedValue: OptionalInjected<Service> {
-        get { return self }
+        get { self }
         mutating set { self = newValue }
     }
 }
@@ -50,7 +53,6 @@ public struct OptionalInjected<Service> {
 /// The wrapped dependent service is not resolved by the main container until the service is accessed.
 @propertyWrapper
 public struct LazyInjected<Service> {
-
     public var name: String?
 
     public init(name: String? = nil) {
@@ -58,7 +60,7 @@ public struct LazyInjected<Service> {
     }
 
     public var isInjected: Bool {
-        return service != nil
+        service != nil
     }
 
     public var wrappedValue: Service {
@@ -68,11 +70,11 @@ public struct LazyInjected<Service> {
             }
             return service
         }
-        mutating set { service = newValue  }
+        mutating set { service = newValue }
     }
 
     public var projectedValue: LazyInjected<Service> {
-        get { return self }
+        get { self }
         mutating set { self = newValue }
     }
 

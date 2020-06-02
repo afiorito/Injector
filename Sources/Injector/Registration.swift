@@ -13,9 +13,9 @@ public final class Registration<Service> {
         self.factory = factory
 
         if let serviceName = name {
-            self.key = "\(identifier)::\(serviceName)"
+            key = "\(identifier)::\(serviceName)"
         } else {
-            self.key = String(identifier)
+            key = String(identifier)
         }
     }
 
@@ -27,7 +27,7 @@ public final class Registration<Service> {
             return nil
         }
 
-        self.modifier?(resolver, service)
+        modifier?(resolver, service)
         return service
     }
 
@@ -44,7 +44,6 @@ public final class Registration<Service> {
 // MARK: Modifiers
 
 extension Registration {
-
     /// Indicates that the registered service implements a specific protocol.
     ///
     /// - Parameters:

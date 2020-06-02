@@ -1,8 +1,7 @@
-import XCTest
 @testable import Injector
+import XCTest
 
 class ContainerScopeNameTests: XCTestCase {
-
     var container: Container!
 
     override func setUp() {
@@ -86,5 +85,4 @@ class ContainerScopeNameTests: XCTestCase {
         XCTAssertNotEqual(service1?.uuid, service2?.uuid)
         XCTAssertNotEqual(service2?.uuid, service3?.uuid)
     }
-
 }

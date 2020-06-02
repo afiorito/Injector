@@ -1,8 +1,7 @@
-import XCTest
 @testable import Injector
+import XCTest
 
 class ContainerBasicTests: XCTestCase {
-
     var container: Container!
 
     override func setUp() {
@@ -69,9 +68,9 @@ class ContainerBasicTests: XCTestCase {
 
     func testResolutionProperties() {
         container.register(name: "secret") { MockApiService() }
-            .resolveProperties { (_, service) in
+            .resolveProperties { _, service in
                 service.url = "secret"
-        }
+            }
         let apiService: MockApiService? = container.resolveOptional(name: "secret")
         XCTAssertNotNil(apiService)
         XCTAssertEqual(apiService?.url, "secret")

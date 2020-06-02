@@ -7,10 +7,10 @@ public enum Scope {
 
     var resolver: Resolver {
         switch self {
-        case .graph: return GraphResolver()
-        case .shared: return SharedResolver()
-        case .singleton: return SingletonResolver()
-        case .unique: return UniqueResolver()
+            case .graph: return GraphResolver()
+            case .shared: return SharedResolver()
+            case .singleton: return SingletonResolver()
+            case .unique: return UniqueResolver()
         }
     }
 }

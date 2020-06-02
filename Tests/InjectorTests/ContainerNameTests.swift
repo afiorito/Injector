@@ -1,8 +1,7 @@
-import XCTest
 @testable import Injector
+import XCTest
 
 class ContainerNameTests: XCTestCase {
-
     var container: Container!
 
     override func setUp() {
@@ -62,5 +61,4 @@ class ContainerNameTests: XCTestCase {
         let unnamed: MockNamedService? = container.resolveOptional()
         XCTAssertNil(unnamed)
     }
-
 }

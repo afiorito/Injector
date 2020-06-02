@@ -32,7 +32,7 @@ public final class Container {
     @discardableResult
     public static func register<Service>(_ type: Service.Type = Service.self, name: String? = nil,
                                          factory: @escaping Container.Factory<Service>) -> Registration<Service> {
-        return container.register(type, name: name, factory: { _ -> Service? in return factory() })
+        container.register(type, name: name, factory: { _ -> Service? in factory() })
     }
 
     /// Registers a specifc type of service using a factory method.
@@ -43,9 +43,12 @@ public final class Container {
     ///   - factory: A closure that constructs and returns an instance of the service.
     /// - Returns: An instance of the service `Registration` that allows further modifications.
     @discardableResult
-    public static func register<Service>(_ type: Service.Type = Service.self, name: String? = nil,
-                                         factory: @escaping Container.FactoryResolver<Service>) -> Registration<Service> {
-        return container.register(type, name: name, factory: { resolver -> Service? in return factory(resolver) })
+    public static func register<Service>(
+        _ type: Service.Type = Service.self,
+        name: String? = nil,
+        factory: @escaping Container.FactoryResolver<Service>
+    ) -> Registration<Service> {
+        container.register(type, name: name, factory: { resolver -> Service? in factory(resolver) })
     }
 
     /// Registers a specifc type of service using a factory method.
@@ -58,7 +61,7 @@ public final class Container {
     @discardableResult
     public final func register<Service>(_ type: Service.Type = Service.self, name: String? = nil,
                                         factory: @escaping Container.Factory<Service>) -> Registration<Service> {
-        return register(type, name: name, factory: { _ -> Service? in return factory() })
+        register(type, name: name, factory: { _ -> Service? in factory() })
     }
 
     /// Registers a specifc type of service using a factory method.
@@ -69,8 +72,11 @@ public final class Container {
     ///   - factory: A closure that constructs and returns an instance of the service.
     /// - Returns: An instance of the service `Registration` that allows further modifications.
     @discardableResult
-    public final func register<Service>(_ type: Service.Type = Service.self, name: String? = nil,
-                                        factory: @escaping Container.FactoryResolver<Service>) -> Registration<Service> {
+    public final func register<Service>(
+        _: Service.Type = Service.self,
+        name: String? = nil,
+        factory: @escaping Container.FactoryResolver<Service>
+    ) -> Registration<Service> {
         let name = name ?? NILNAME
         let identifier = ObjectIdentifier(Service.self).hashValue
         let registration = Registration(container: self, identifier: identifier, name: name, factory: factory)
@@ -107,7 +113,7 @@ public final class Container {
     public final func resolve<Service>(_ type: Service.Type = Service.self, name: String? = nil) -> Service {
         if let registration = find(type, name: name ?? NILNAME),
             let service = resolver(registration.scope).resolve(registration: registration) {
-                return service
+            return service
         }
 
         fatalError("Container :: '\(type)(\(name ?? ""))' registration not found.")
@@ -133,7 +139,7 @@ public final class Container {
     public final func resolveOptional<Service>(_ type: Service.Type = Service.self, name: String? = nil) -> Service? {
         if let registration = find(type, name: name ?? NILNAME),
             let service = resolver(registration.scope).resolve(registration: registration) {
-                return service
+            return service
         }
 
         return nil
@@ -145,7 +151,7 @@ public final class Container {
     ///     - type: The type of service being resolved.
     ///     - name: A  name to specify the variant of the service being resolved.
     /// - Returns: An optional instance of the specified service.
-    private func find<Service>(_ type: Service.Type, name: String) -> Registration<Service>? {
+    private func find<Service>(_: Service.Type, name: String) -> Registration<Service>? {
         guard let namedRegistrations = registrations[ObjectIdentifier(Service.self).hashValue] else {
             return nil
         }
@@ -172,5 +178,4 @@ public final class Container {
     private var resolvers = [Scope: Resolver]()
     private var registrations = [Int: [String: Any]]()
     private let NILNAME = "*"
-
 }
