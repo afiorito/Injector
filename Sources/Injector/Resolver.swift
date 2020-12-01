@@ -27,7 +27,7 @@ class GraphResolver: Resolver {
     private var depth = 0
 }
 
-/// A shared resolver resolves the same service while strong references to them exist. 
+/// A shared resolver resolves the same service while strong references to them exist.
 /// The service remains deallocated until the next resolve.
 class SharedResolver: Resolver {
     private var cachedServices = [String: WeakService](minimumCapacity: 16)
