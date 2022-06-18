@@ -1,5 +1,5 @@
-@testable import Injector
 import XCTest
+@testable import Injector
 
 class ContainerScopeValueTests: XCTestCase {
     var container: Container!

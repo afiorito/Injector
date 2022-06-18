@@ -1,23 +1,14 @@
-# ![icon](injector.png) Injector
+# Getting Started
 
-A dependency injection framework written completely in Swift.
+Create a container and register and resolve dependencies.
 
-## Installation
+## Overview
 
-Add Injector to your project using Swift Package Manager. In your Xcode project, select `File` > `Swift Packages` > `Add Package Dependency` and enter the repository URL.
-
-## Documentation
-
-- [Basic Usage](#basic-usage)
-- [Scope](#scope)
-- [Protocols](#protocols)
-- [Optionals](#optionals)
-- [Named Instances](#named-instances)
-
+The Container manages the registration of all dependencies. It uses Swift's advanced type inference to resolve the exact type you registed.
 
 ### Basic Usage
 
-1. Register Services in `registerContainerServices`.
+1. Register Services in ``ContainerRegistering/registerContainerServices()``.
 
 ```swift
 class ServiceA {}
@@ -37,7 +28,7 @@ class ViewController: UIViewController {
 ```
 
 ### Scope
-The registration scope of a Service can be modified to set the lifecycle of a resolved instance.
+The registration scope of a service can be modified to set the lifecycle of a resolved instance.
 
 There are 4 supported scopes:
 ```swift
@@ -102,6 +93,3 @@ class ViewController: UIViewController {
     @Injected(name: .special) var service: ServiceA
 }
 ```
-
-## License
-Injector is available under the MIT license. See the [LICENSE](LICENSE) file for more info.

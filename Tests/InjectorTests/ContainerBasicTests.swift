@@ -1,5 +1,5 @@
-@testable import Injector
 import XCTest
+@testable import Injector
 
 class ContainerBasicTests: XCTestCase {
     var container: Container!
@@ -7,10 +7,6 @@ class ContainerBasicTests: XCTestCase {
     override func setUp() {
         super.setUp()
         container = Container()
-    }
-
-    override func tearDown() {
-        super.tearDown()
     }
 
     func testExplicitResolution() {
@@ -29,9 +25,12 @@ class ContainerBasicTests: XCTestCase {
 
     func testOptionalResolution() {
         container.register { MockApiService() }
+        container.register { nil as MockDatabaseService? }
 
         let apiService: MockApiService? = container.resolveOptional()
+        let databaseService: MockDatabaseService? = container.resolveOptional()
         XCTAssertNotNil(apiService)
+        XCTAssertNil(databaseService)
     }
 
     func testOptionalResolutionNotFound() {
@@ -67,11 +66,11 @@ class ContainerBasicTests: XCTestCase {
     }
 
     func testResolutionProperties() {
-        container.register(name: "secret") { MockApiService() }
+        container.register(name: .secret) { MockApiService() }
             .resolveProperties { _, service in
                 service.url = "secret"
             }
-        let apiService: MockApiService? = container.resolveOptional(name: "secret")
+        let apiService: MockApiService? = container.resolveOptional(name: .secret)
         XCTAssertNotNil(apiService)
         XCTAssertEqual(apiService?.url, "secret")
     }

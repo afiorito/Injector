@@ -6,9 +6,23 @@ public final class Container {
     public typealias FactoryResolver<Service> = (_ resolver: Container) -> Service?
     public typealias FactoryModifier<Service> = (_ resolver: Container, _ service: Service) -> Void
 
-    /// The main container for registering services.
-    public static var container: Container = Container()
+    /// A structure that defines the name of a service.
+    public struct ServiceName: Hashable, RawRepresentable {
+        public let rawValue: String
 
+        public init(_ rawValue: String) {
+            self.init(rawValue: rawValue)
+        }
+
+        public init(rawValue: String) {
+            self.rawValue = rawValue
+        }
+    }
+
+    /// The root container for resolving services.
+    public static var root = `default`
+
+    /// Initializes the container.
     public init() {}
 
     /// Performs one-time initialization of Container services.
@@ -20,6 +34,9 @@ public final class Container {
         Container.registerServices = nil
     }
 
+    /// A semaphore for synchronizing container access.
+    static var lock = NSRecursiveLock()
+
     // MARK: - Service Registration
 
     /// Registers a specifc type of service using a factory method.
@@ -30,9 +47,9 @@ public final class Container {
     ///   - factory: A closure that constructs and returns an instance of the service.
     /// - Returns: An instance of the service `Registration` that allows further modifications.
     @discardableResult
-    public static func register<Service>(_ type: Service.Type = Service.self, name: String? = nil,
-                                         factory: @escaping Container.Factory<Service>) -> Registration<Service> {
-        container.register(type, name: name, factory: { _ -> Service? in factory() })
+    public static func register<Service>(_ type: Service.Type = Service.self, name: ServiceName? = nil,
+                                         factory: @escaping Factory<Service>) -> Registration<Service> {
+        `default`.register(type, name: name, factory: { _ -> Service? in factory() })
     }
 
     /// Registers a specifc type of service using a factory method.
@@ -45,10 +62,10 @@ public final class Container {
     @discardableResult
     public static func register<Service>(
         _ type: Service.Type = Service.self,
-        name: String? = nil,
-        factory: @escaping Container.FactoryResolver<Service>
+        name: ServiceName? = nil,
+        factory: @escaping FactoryResolver<Service>
     ) -> Registration<Service> {
-        container.register(type, name: name, factory: { resolver -> Service? in factory(resolver) })
+        `default`.register(type, name: name, factory: { resolver -> Service? in factory(resolver) })
     }
 
     /// Registers a specifc type of service using a factory method.
@@ -59,8 +76,8 @@ public final class Container {
     ///   - factory: A closure that constructs and returns an instance of the service.
     /// - Returns: An instance of the service `Registration` that allows further modifications.
     @discardableResult
-    public final func register<Service>(_ type: Service.Type = Service.self, name: String? = nil,
-                                        factory: @escaping Container.Factory<Service>) -> Registration<Service> {
+    public func register<Service>(_ type: Service.Type = Service.self, name: ServiceName? = nil,
+                                  factory: @escaping Factory<Service>) -> Registration<Service> {
         register(type, name: name, factory: { _ -> Service? in factory() })
     }
 
@@ -72,18 +89,20 @@ public final class Container {
     ///   - factory: A closure that constructs and returns an instance of the service.
     /// - Returns: An instance of the service `Registration` that allows further modifications.
     @discardableResult
-    public final func register<Service>(
+    public func register<Service>(
         _: Service.Type = Service.self,
-        name: String? = nil,
-        factory: @escaping Container.FactoryResolver<Service>
+        name: ServiceName? = nil,
+        factory: @escaping FactoryResolver<Service>
     ) -> Registration<Service> {
-        let name = name ?? NILNAME
+        lock.lock()
+        defer { lock.unlock() }
+        let name = name?.rawValue ?? NILNAME
         let identifier = ObjectIdentifier(Service.self).hashValue
         let registration = Registration(container: self, identifier: identifier, name: name, factory: factory)
 
-        if var namedRegistrations = registrations[identifier] {
-            namedRegistrations[name] = registration
-            registrations[identifier] = namedRegistrations
+        if var namedRegistration = registrations[identifier] {
+            namedRegistration[name] = registration
+            registrations[identifier] = namedRegistration
         } else {
             registrations[identifier] = [name: registration]
         }
@@ -99,9 +118,9 @@ public final class Container {
     ///     - type: The type of service being resolved. Optional, may be inferred by the assignment type.
     ///     - name: A  name to specify the variant of the service being resolved.
     /// - Returns: An instance of the specified service.
-    public static func resolve<Service>(_ type: Service.Type = Service.self, name: String? = nil) -> Service {
+    public static func resolve<Service>(_ type: Service.Type = Service.self, name: ServiceName? = nil) -> Service {
         Container.registerServices?()
-        return container.resolve(type, name: name)
+        return root.resolve(type, name: name)
     }
 
     /// Resolves a type of service from the current container.
@@ -110,13 +129,15 @@ public final class Container {
     ///     - type: The type of service being resolved. Optional, may be inferred by the assignment type.
     ///     - name: A  name to specify the variant of the service being resolved.
     /// - Returns: An instance of the specified service.
-    public final func resolve<Service>(_ type: Service.Type = Service.self, name: String? = nil) -> Service {
-        if let registration = find(type, name: name ?? NILNAME),
-            let service = resolver(registration.scope).resolve(registration: registration) {
+    public func resolve<Service>(_ type: Service.Type = Service.self, name: ServiceName? = nil) -> Service {
+        lock.lock()
+        defer { lock.unlock() }
+        if let registration = find(type, name: name?.rawValue ?? NILNAME),
+           let service = resolver(registration.scope).resolve(registration: registration) {
             return service
         }
 
-        fatalError("Container :: '\(type)(\(name ?? ""))' registration not found.")
+        fatalError("Container :: '\(type)(\(name?.rawValue ?? ""))' registration not found.")
     }
 
     /// Resolves an optional type of service from the main container.
@@ -125,9 +146,10 @@ public final class Container {
     ///     - type: The type of service being resolved. Optional, may be inferred by the assignment type.
     ///     - name: A  name to specify the variant of the service being resolved.
     /// - Returns: An optional instance of the specified service.
-    public static func resolveOptional<Service>(_ type: Service.Type = Service.self, name: String? = nil) -> Service? {
+    public static func resolveOptional<Service>(_ type: Service.Type = Service.self,
+                                                name: ServiceName? = nil) -> Service? {
         Container.registerServices?()
-        return container.resolveOptional(type, name: name)
+        return root.resolveOptional(type, name: name)
     }
 
     /// Resolves an optional type of service from the current container.
@@ -136,9 +158,11 @@ public final class Container {
     ///     - type: The type of service being resolved. Optional, may be inferred by the assignment type.
     ///     - name: A  name to specify the variant of the service being resolved.
     /// - Returns: An optional instance of the specified service.
-    public final func resolveOptional<Service>(_ type: Service.Type = Service.self, name: String? = nil) -> Service? {
-        if let registration = find(type, name: name ?? NILNAME),
-            let service = resolver(registration.scope).resolve(registration: registration) {
+    public func resolveOptional<Service>(_ type: Service.Type = Service.self, name: ServiceName? = nil) -> Service? {
+        lock.lock()
+        defer { lock.unlock() }
+        if let registration = find(type, name: name?.rawValue ?? NILNAME),
+           let service = resolver(registration.scope).resolve(registration: registration) {
             return service
         }
 
@@ -149,7 +173,7 @@ public final class Container {
     ///
     /// - Parameters:
     ///     - type: The type of service being resolved.
-    ///     - name: A  name to specify the variant of the service being resolved.
+    ///     - name: A name to specify the variant of the service being resolved.
     /// - Returns: An optional instance of the specified service.
     private func find<Service>(_: Service.Type, name: String) -> Registration<Service>? {
         guard let namedRegistrations = registrations[ObjectIdentifier(Service.self).hashValue] else {
@@ -163,8 +187,8 @@ public final class Container {
     ///
     /// - Parameters:
     ///     - scope: The scope of the resolver being returned.
-    /// - Returns: an optional instance of the specified service.
-    private func resolver(_ scope: Scope) -> Resolver {
+    /// - Returns: An optional instance of the specified service.
+    private func resolver(_ scope: Scope) -> any Resolver {
         if let resolver = resolvers[scope] {
             return resolver
         }
@@ -175,7 +199,10 @@ public final class Container {
         return resolver
     }
 
-    private var resolvers = [Scope: Resolver]()
+    private static var `default` = Container()
+
+    private let lock = Container.lock
+    private var resolvers = [Scope: any Resolver]()
     private var registrations = [Int: [String: Any]]()
     private let NILNAME = "*"
 }

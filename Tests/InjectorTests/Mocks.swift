@@ -8,6 +8,13 @@ extension Container: ContainerRegistering {
     }
 }
 
+extension Container.ServiceName {
+    static let peter = Self("peter")
+    static let quinn = Self("quinn")
+    static let secret = Self("secret")
+    static let tom = Self("tom")
+}
+
 // MARK: - Mock Protocols
 
 protocol MockCaching {
@@ -90,5 +97,5 @@ class LazyInjectedService {
 }
 
 class NamedInjectedService {
-    @Injected(name: "Quinn") var service: MockNamedService
+    @Injected(name: .quinn) var service: MockNamedService
 }

@@ -1,5 +1,5 @@
-@testable import Injector
 import XCTest
+@testable import Injector
 
 class InjectorTests: XCTestCase {
     override func setUp() {
@@ -8,8 +8,8 @@ class InjectorTests: XCTestCase {
         Container.register { MockApiService() }
         Container.register { MockDatabaseService(Container.resolveOptional()) }
 
-        Container.register(name: "Quinn") { MockNamedService("Quinn") }
-        Container.register(name: "Tom") { MockNamedService("Tom") }
+        Container.register(name: .quinn) { MockNamedService("Quinn") }
+        Container.register(name: .tom) { MockNamedService("Tom") }
     }
 
     override func tearDown() {
@@ -20,12 +20,20 @@ class InjectorTests: XCTestCase {
         let injectedService = BasicInjectedService()
         XCTAssertNotNil(injectedService.service)
         XCTAssertNotNil(injectedService.service.apiService)
+
+        let overrideService = MockDatabaseService(nil)
+        injectedService.service = overrideService
+        XCTAssertIdentical(injectedService.service, overrideService)
     }
 
     func testOptionalInjection() {
         let optionalInjectedService = OptionalInjectedService()
         XCTAssertNotNil(optionalInjectedService.service)
         XCTAssertNil(optionalInjectedService.notRegistered)
+
+        let overrideService = MockApiService()
+        optionalInjectedService.service = overrideService
+        XCTAssertIdentical(optionalInjectedService.service, overrideService)
     }
 
     func testNamedInjection() {
@@ -36,9 +44,12 @@ class InjectorTests: XCTestCase {
 
     func testLazyInjection() {
         let lazyInjectedService = LazyInjectedService()
-        XCTAssertFalse(lazyInjectedService.$service.isInjected)
+
         XCTAssertNotNil(lazyInjectedService.service)
         XCTAssertNotNil(lazyInjectedService.service.apiService)
-        XCTAssertTrue(lazyInjectedService.$service.isInjected)
+
+        let overrideService = MockDatabaseService(nil)
+        lazyInjectedService.service = overrideService
+        XCTAssertIdentical(lazyInjectedService.service, overrideService)
     }
 }

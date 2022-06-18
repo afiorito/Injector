@@ -1,5 +1,5 @@
-@testable import Injector
 import XCTest
+@testable import Injector
 
 class ContainerScopeNameTests: XCTestCase {
     var container: Container!
@@ -15,12 +15,12 @@ class ContainerScopeNameTests: XCTestCase {
 
     func testContainerScopeNameGraph() {
         // graph scope is the default
-        container.register(name: "Quinn") { MockNamedService("Quinn") }
-        container.register(name: "Tom") { MockNamedService("Tom") }
+        container.register(name: .quinn) { MockNamedService("Quinn") }
+        container.register(name: .tom) { MockNamedService("Tom") }
 
-        let service1: MockNamedService? = container.resolveOptional(name: "Quinn")
-        let service2: MockNamedService? = container.resolveOptional(name: "Tom")
-        let service3: MockNamedService? = container.resolveOptional(name: "Tom")
+        let service1: MockNamedService? = container.resolveOptional(name: .quinn)
+        let service2: MockNamedService? = container.resolveOptional(name: .tom)
+        let service3: MockNamedService? = container.resolveOptional(name: .tom)
 
         XCTAssertNotNil(service1)
         XCTAssertNotNil(service2)
@@ -33,12 +33,12 @@ class ContainerScopeNameTests: XCTestCase {
     }
 
     func testContainerScopeNameShared() {
-        container.register(name: "Quinn") { MockNamedService("Quinn") }.scope(.shared)
-        container.register(name: "Tom") { MockNamedService("Tom") }.scope(.shared)
+        container.register(name: .quinn) { MockNamedService("Quinn") }.scope(.shared)
+        container.register(name: .tom) { MockNamedService("Tom") }.scope(.shared)
 
-        let service1: MockNamedService? = container.resolveOptional(name: "Quinn")
-        let service2: MockNamedService? = container.resolveOptional(name: "Tom")
-        let service3: MockNamedService? = container.resolveOptional(name: "Tom")
+        let service1: MockNamedService? = container.resolveOptional(name: .quinn)
+        let service2: MockNamedService? = container.resolveOptional(name: .tom)
+        let service3: MockNamedService? = container.resolveOptional(name: .tom)
 
         XCTAssertNotNil(service1)
         XCTAssertNotNil(service2)
@@ -51,12 +51,12 @@ class ContainerScopeNameTests: XCTestCase {
     }
 
     func testContainerScopeNameApplication() {
-        container.register(name: "Quinn") { MockNamedService("Quinn") }.scope(.singleton)
-        container.register(name: "Tom") { MockNamedService("Tom") }.scope(.singleton)
+        container.register(name: .quinn) { MockNamedService("Quinn") }.scope(.singleton)
+        container.register(name: .tom) { MockNamedService("Tom") }.scope(.singleton)
 
-        let service1: MockNamedService? = container.resolveOptional(name: "Quinn")
-        let service2: MockNamedService? = container.resolveOptional(name: "Tom")
-        let service3: MockNamedService? = container.resolveOptional(name: "Tom")
+        let service1: MockNamedService? = container.resolveOptional(name: .quinn)
+        let service2: MockNamedService? = container.resolveOptional(name: .tom)
+        let service3: MockNamedService? = container.resolveOptional(name: .tom)
 
         XCTAssertNotNil(service1)
         XCTAssertNotNil(service2)
@@ -69,12 +69,12 @@ class ContainerScopeNameTests: XCTestCase {
     }
 
     func testContainerScopeNameUnique() {
-        container.register(name: "Quinn") { MockNamedService("Quinn") }.scope(.unique)
-        container.register(name: "Tom") { MockNamedService("Tom") }.scope(.unique)
+        container.register(name: .quinn) { MockNamedService("Quinn") }.scope(.unique)
+        container.register(name: .tom) { MockNamedService("Tom") }.scope(.unique)
 
-        let service1: MockNamedService? = container.resolveOptional(name: "Quinn")
-        let service2: MockNamedService? = container.resolveOptional(name: "Tom")
-        let service3: MockNamedService? = container.resolveOptional(name: "Tom")
+        let service1: MockNamedService? = container.resolveOptional(name: .quinn)
+        let service2: MockNamedService? = container.resolveOptional(name: .tom)
+        let service3: MockNamedService? = container.resolveOptional(name: .tom)
 
         XCTAssertNotNil(service1)
         XCTAssertNotNil(service2)

@@ -1,5 +1,5 @@
-@testable import Injector
 import XCTest
+@testable import Injector
 
 class ContainerNameTests: XCTestCase {
     var container: Container!
@@ -14,11 +14,11 @@ class ContainerNameTests: XCTestCase {
     }
 
     func testContainerValidNames() {
-        container.register(name: "Quinn") { MockNamedService("Quinn") }
-        container.register(name: "Tom") { MockNamedService("Tom") }
+        container.register(name: .quinn) { MockNamedService("Quinn") }
+        container.register(name: .tom) { MockNamedService("Tom") }
 
-        let quinn: MockNamedService? = container.resolveOptional(name: "Quinn")
-        let tom: MockNamedService? = container.resolveOptional(name: "Tom")
+        let quinn: MockNamedService? = container.resolveOptional(name: .quinn)
+        let tom: MockNamedService? = container.resolveOptional(name: .tom)
 
         XCTAssertNotNil(quinn)
         XCTAssertNotNil(tom)
@@ -28,21 +28,21 @@ class ContainerNameTests: XCTestCase {
     }
 
     func testContainerInvalidNames() {
-        container.register(name: "Quinn") { MockNamedService("Quinn") }
-        container.register(name: "Tom") { MockNamedService("Tom") }
+        container.register(name: .quinn) { MockNamedService("Quinn") }
+        container.register(name: .tom) { MockNamedService("Tom") }
 
-        let peter: MockNamedService? = container.resolveOptional(name: "Peter")
+        let peter: MockNamedService? = container.resolveOptional(name: .peter)
         XCTAssertNil(peter)
     }
 
     func testContainerNamesWithUnnamed() {
-        container.register(name: "Quinn") { MockNamedService("Quinn") }
-        container.register(name: "Tom") { MockNamedService("Tom") }
+        container.register(name: .quinn) { MockNamedService("Quinn") }
+        container.register(name: .tom) { MockNamedService("Tom") }
 
         container.register { MockNamedService("Unnamed") }
 
-        let quinn: MockNamedService? = container.resolveOptional(name: "Quinn")
-        let tom: MockNamedService? = container.resolveOptional(name: "Tom")
+        let quinn: MockNamedService? = container.resolveOptional(name: .quinn)
+        let tom: MockNamedService? = container.resolveOptional(name: .tom)
         let unnamed: MockNamedService? = container.resolveOptional()
 
         XCTAssertNotNil(quinn)
@@ -55,8 +55,8 @@ class ContainerNameTests: XCTestCase {
     }
 
     func testContainerNamesUnnamedNotFound() {
-        container.register(name: "Quinn") { MockNamedService("Quinn") }
-        container.register(name: "Tom") { MockNamedService("Tom") }
+        container.register(name: .quinn) { MockNamedService("Quinn") }
+        container.register(name: .tom) { MockNamedService("Tom") }
 
         let unnamed: MockNamedService? = container.resolveOptional()
         XCTAssertNil(unnamed)
