@@ -1,7 +1,7 @@
 import Foundation
-import Injector
+@testable import Injector
 
-extension Container: ContainerRegistering {
+extension Container: @retroactive ContainerRegistering {
     public static func registerContainerServices() {
         register { MockApiService() }
         register { MockDatabaseService(resolveOptional()) }

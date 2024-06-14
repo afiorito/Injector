@@ -1,13 +1,13 @@
 import Foundation
 
 /// A  dependency injection container for resolving services.
-public final class Container {
+public final class Container: Sendable {
     public typealias Factory<Service> = () -> Service?
     public typealias FactoryResolver<Service> = (_ resolver: Container) -> Service?
     public typealias FactoryModifier<Service> = (_ resolver: Container, _ service: Service) -> Void
 
     /// A structure that defines the name of a service.
-    public struct ServiceName: Hashable, RawRepresentable {
+    public struct ServiceName: Hashable, RawRepresentable, Sendable {
         public let rawValue: String
 
         public init(_ rawValue: String) {
@@ -20,13 +20,13 @@ public final class Container {
     }
 
     /// The root container for resolving services.
-    public static var root = `default`
+    public nonisolated(unsafe) static var root = `default`
 
     /// Initializes the container.
     public init() {}
 
     /// Performs one-time initialization of Container services.
-    public static var registerServices: (() -> Void)? = {
+    public nonisolated(unsafe) static var registerServices: (() -> Void)? = {
         if Container.registerServices != nil, let registering = Container.self as? ContainerRegistering.Type {
             registering.registerContainerServices()
         }
@@ -35,7 +35,7 @@ public final class Container {
     }
 
     /// A semaphore for synchronizing container access.
-    static var lock = NSRecursiveLock()
+    static let lock = NSRecursiveLock()
 
     // MARK: - Service Registration
 
@@ -199,10 +199,10 @@ public final class Container {
         return resolver
     }
 
-    private static var `default` = Container()
+    private static let `default` = Container()
 
     private let lock = Container.lock
-    private var resolvers = [Scope: any Resolver]()
-    private var registrations = [Int: [String: Any]]()
+    private nonisolated(unsafe) var resolvers = [Scope: any Resolver]()
+    private nonisolated(unsafe) var registrations = [Int: [String: Any]]()
     private let NILNAME = "*"
 }

@@ -1,11 +1,11 @@
-// swift-tools-version:5.7
+// swift-tools-version:6.0
 
 import PackageDescription
 
 let package = Package(
     name: "Injector",
     platforms: [
-        .iOS(.v11),
+        .iOS(.v12),
         .macOS(.v10_14),
     ],
     products: [

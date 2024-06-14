@@ -49,8 +49,8 @@ public struct LazyInjected<Service> {
         mutating get {
             lock.lock()
             defer { lock.unlock() }
-            if self.service == nil {
-                self.service = Container.resolve(Service.self, name: name)
+            if service == nil {
+                service = Container.resolve(Service.self, name: name)
             }
             return service
         }
